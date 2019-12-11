@@ -6,7 +6,7 @@ import grpc
 import primes_pb2
 import primes_pb2_grpc
 
-address = 'localhost:50051' # CHANGELATER
+address = 'primes-j6z4gxi7tq-uc.a.run.app:443'
 
 def get_primes(stub, n):
     request = primes_pb2.PrimeCount(number=n)

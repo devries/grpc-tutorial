@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	address = "localhost:50051" // CHANGEWHENREADY
+	address = "primes-j6z4gxi7tq-uc.a.run.app:443"
 )
 
 func main() {
