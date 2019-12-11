@@ -1,0 +1,15 @@
+*~
+.DS_Store
+.cache
+.env
+api/primes.pb.go
+primes_client
+primes_server
+venv/
+__pycache__
+python_client*/primes_pb2.py
+python_client*/primes_pb2_grpc.py
+minica.pem
+minica-key.pem
+localhost/
+127.0.0.1/

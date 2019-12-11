@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api;
+
+service Primes {
+  rpc GetPrimes(PrimeCount) returns (PrimeNumbers) {}
+}
+
+message PrimeCount {
+  int64 number = 1;
+}
+
+message PrimeNumbers {
+  repeated int64 contents = 1;
+}
