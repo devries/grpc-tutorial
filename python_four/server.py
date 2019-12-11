@@ -19,9 +19,22 @@ class Primes(primes_pb2_grpc.PrimesServicer):
         return primes_pb2.PrimeNumbers(contents=l)
 
 def serve():
+    with open('minica.pem', 'rb') as f:
+        root_cert = f.read()
+
+    with open('localhost/cert.pem', 'rb') as f:
+        cert = f.read()
+    
+    with open('localhost/key.pem', 'rb') as f:
+        private_key = f.read()
+
+    creds = grpc.ssl_server_credentials(((private_key, cert),),
+            root_certificates=root_cert,
+            require_client_auth=True)
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     primes_pb2_grpc.add_PrimesServicer_to_server(Primes(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_secure_port('[::]:50051', creds)
     server.start()
     server.wait_for_termination()
 

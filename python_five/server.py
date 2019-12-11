@@ -10,6 +10,11 @@ import primes_pb2_grpc
 
 class Primes(primes_pb2_grpc.PrimesServicer):
     def GetPrimes(self, request, context):
+        metadata = context.invocation_metadata()
+        metadict = metadata_to_dict(metadata)
+        if metadict.get('authorization')!='Bearer HelloWorld':
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authorizaiton Required")
+
         if request.number>500:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"{request.number} is too many primes to return")
         if request.number<0:
@@ -18,10 +23,28 @@ class Primes(primes_pb2_grpc.PrimesServicer):
         l = list(primes(context, request.number))
         return primes_pb2.PrimeNumbers(contents=l)
 
+def metadata_to_dict(md):
+    d = {}
+    for m in md:
+        d[m[0]]=m[1]
+
+    return d
 def serve():
+    with open('minica.pem', 'rb') as f:
+        root_cert = f.read()
+
+    with open('localhost/cert.pem', 'rb') as f:
+        cert = f.read()
+    
+    with open('localhost/key.pem', 'rb') as f:
+        private_key = f.read()
+
+    creds = grpc.ssl_server_credentials(((private_key, cert),),
+            root_certificates=root_cert)
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     primes_pb2_grpc.add_PrimesServicer_to_server(Primes(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_secure_port('[::]:50051', creds)
     server.start()
     server.wait_for_termination()
 
