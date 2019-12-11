@@ -175,10 +175,17 @@ $ go build -o primes_client client_one/main.go
 
 ## Running the Server and Clients
 
-From the root directory, run the client using the command
+From the root directory of the repository, run the Go server using the command
 
 ```sh
 $ ./primes_server
+```
+
+To try the python server, you must quite the Go server and from the root
+directory of the repository run the command
+
+```sh
+$ python python_one/server.py
 ```
 
 Then in another window or shell you can run the clients. The clients take one
