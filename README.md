@@ -201,7 +201,7 @@ response looks like.
 
 ## Running TLS Clients with Cloud Run
 
-I have put up a server at `ngfaas.unnecessary.tech:443` running on Cloud Run.
+I have put up a server at `primes-j6z4gxi7tq-uc.a.run.app:443` running on Cloud Run.
 The clients are automatically set up to query that server. Hopefully the
 clients will find and load the appropriate client root certificates for your
 system, which should include the Let's Encrypt root certificate. If you
