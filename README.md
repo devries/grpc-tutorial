@@ -1,4 +1,4 @@
-# Next Generation Fucks as a Service: A gRPC sample
+# gRPC Tutorial: A gRPC sample with security
 
 In order to learn and understand [gRPC](https://grpc.io), I decided to
 implement a simple prime number generator as a
