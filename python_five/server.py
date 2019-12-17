@@ -8,12 +8,21 @@ import grpc
 import primes_pb2
 import primes_pb2_grpc
 
+def authorization_role(func):
+    def wrapper(self, request, context):
+        metadict = metadata_to_dict(context.invocation_metadata())
+        if metadict.get('authorization')=='Bearer HelloWorld':
+            context.user='standard'
+        else:
+            context.user=None
+        return func(self, request, context)
+    return wrapper
+
 class Primes(primes_pb2_grpc.PrimesServicer):
+    @authorization_role
     def GetPrimes(self, request, context):
-        metadata = context.invocation_metadata()
-        metadict = metadata_to_dict(metadata)
-        if metadict.get('authorization')!='Bearer HelloWorld':
-            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Authorizaiton Required")
+        if context.user!='standard':
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Standard user role required")
 
         if request.number>500:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"{request.number} is too many primes to return")
@@ -29,6 +38,7 @@ def metadata_to_dict(md):
         d[m[0]]=m[1]
 
     return d
+
 def serve():
     with open('minica.pem', 'rb') as f:
         root_cert = f.read()
@@ -42,7 +52,9 @@ def serve():
     creds = grpc.ssl_server_credentials(((private_key, cert),),
             root_certificates=root_cert)
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    authorizer = AuthorizationInterceptor('HelloWorld')
+
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=(authorizer,))
     primes_pb2_grpc.add_PrimesServicer_to_server(Primes(), server)
     server.add_secure_port('[::]:50051', creds)
     server.start()
@@ -72,6 +84,24 @@ def primes(context, nreq):
             primes.append(i)
             ctr+=1
             yield i
+
+def terminator(code, details):
+    def terminate(request, context):
+        context.abort(code, details)
+
+    return grpc.unary_unary_rpc_method_handler(terminate)
+
+class AuthorizationInterceptor(grpc.ServerInterceptor):
+    def __init__(self, auth_token):
+        self.auth_token = auth_token
+
+    def intercept_service(self, continuation, handler_call_details):
+        metadict = metadata_to_dict(handler_call_details.invocation_metadata)
+
+        if metadict.get('authorization')!=f'Bearer {self.auth_token}':
+            return terminator(grpc.StatusCode.UNAUTHENTICATED, "Authorizaiton Required")
+        else:
+            return continuation(handler_call_details)
 
 if __name__=='__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
