@@ -68,6 +68,11 @@ func (s *server) GetPrimes(ctx context.Context, in *api.PrimeCount) (*api.PrimeN
 	p, ok := peer.FromContext(ctx)
 	if ok {
 		log.Printf("Received Request from %s", p.Addr)
+		tlsAuth, ok := p.AuthInfo.(credentials.TLSInfo)
+		if ok {
+			cert := tlsAuth.State.PeerCertificates[0]
+			log.Printf("Client Certificate name: %s", cert.Subject)
+		}
 	} else {
 		log.Printf("Received Request")
 	}
