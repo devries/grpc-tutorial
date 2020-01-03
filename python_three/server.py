@@ -39,6 +39,7 @@ def serve():
     primes_pb2_grpc.add_PrimesServicer_to_server(Primes(), server)
     server.add_secure_port('[::]:50051', creds)
     server.start()
+    logging.info("Listening on port 50051")
     server.wait_for_termination()
 
 def primes(context, nreq):
