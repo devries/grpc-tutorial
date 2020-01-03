@@ -39,8 +39,8 @@ I write the server in Go and have examples of clients written in both python
 and Go. I have a total of five samples. They are:
 
 - Clients and server with no encryption or authentication
-    - [python client](python_one/client.py) (python_client_one)
-    - [python server](python_one/server.py) (python_server_one)
+    - [python client](python_one/client.py) (python_one)
+    - [python server](python_one/server.py) (python_one)
     - [Go client](client_one/main.go) (client_one)
     - [Go server](server_one/main.go) (server_one)
 
@@ -49,7 +49,7 @@ and Go. I have a total of five samples. They are:
     primes (which I set as more than 500 primes). 
 
 - Clients with TLS, and a server behind a Cloud Run proxy
-    - [python client](python_two/client.py) (python_client_two)
+    - [python client](python_two/client.py) (python_two)
     - [Go client](client_two/main.go) (client_two)
     - [Go server](server_one/main.go) (server_one) - Note this is unchanged from the
       previous sample.
@@ -66,8 +66,8 @@ and Go. I have a total of five samples. They are:
     `x509.SystemCertPool()` call.
 
 - Clients and server use TLS with a private CA
-    - [python client](python_three/client.py) (python_client_three)
-    - [python server](python_three/server.py) (python_server_three)
+    - [python client](python_three/client.py) (python_three)
+    - [python server](python_three/server.py) (python_three)
     - [Go client](client_three/main.go) (client_three)
     - [Go server](server_three/main.go) (server_three)
 
@@ -79,8 +79,8 @@ and Go. I have a total of five samples. They are:
 
 - Client and server use TLS with a private CA, and clients authenticate with a
   certificate during TLS negotiation
-    - [python client](python_four/client.py) (python_client_four)
-    - [python server](python_four/server.py) (python_server_four)
+    - [python client](python_four/client.py) (python_four)
+    - [python server](python_four/server.py) (python_four)
     - [Go client](client_four/main.go) (client_four)
     - [Go server](server_four/main.go) (server_four)
 
@@ -93,8 +93,8 @@ and Go. I have a total of five samples. They are:
 
 - Client and server use TLS with a private CA, and clients authenticate with a
   token.
-    - [python client](python_five/client.py) (python_client_five)
-    - [python server](python_five/server.py) (python_server_five)
+    - [python client](python_five/client.py) (python_five)
+    - [python server](python_five/server.py) (python_five)
     - [Go client](client_five/main.go) (client_five)
     - [Go server](server_five/main.go) (server_five)
 
