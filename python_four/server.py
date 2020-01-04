@@ -12,6 +12,9 @@ class Primes(primes_pb2_grpc.PrimesServicer):
     def GetPrimes(self, request, context):
         p = context.peer()
         logging.info(f"Received Request from {p}")
+        name = context.peer_identities()
+        if name is not None and len(name)>0:
+            logging.info(f"Client Certificate name: {name[0].decode('utf-8')}")
         if request.number>500:
             logging.warning("Error: Asked for too many primes")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"{request.number} is too many primes to return")
