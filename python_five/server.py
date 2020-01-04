@@ -21,12 +21,16 @@ def authorization_role(func):
 class Primes(primes_pb2_grpc.PrimesServicer):
     @authorization_role
     def GetPrimes(self, request, context):
+        p = context.peer()
+        logging.info(f"Received Request from {p}")
         if context.user!='standard':
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Standard user role required")
 
         if request.number>500:
+            logging.warning("Error: Asked for too many primes")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"{request.number} is too many primes to return")
         if request.number<0:
+            logging.warning("Error: Asked for negative amount")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, "Requested number of primes must be positive")
 
         l = list(primes(context, request.number))
@@ -58,6 +62,7 @@ def serve():
     primes_pb2_grpc.add_PrimesServicer_to_server(Primes(), server)
     server.add_secure_port('[::]:50051', creds)
     server.start()
+    logging.info("Listening on port 50051")
     server.wait_for_termination()
 
 def primes(context, nreq):
