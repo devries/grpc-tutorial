@@ -31,6 +31,13 @@ gcloud run deploy primes --image gcr.io/single-arcanum-633/primes_server:latest 
 minica -domains localhost
 minica -ip-addresses 127.0.0.1
 
+# GRPCURL
 
+grpcurl -proto api/primes.proto -d '{"number": 5}' -cacert minica.pem localhost:50051 api.Primes.GetPrimes
 
-
+grpcurl -proto api/primes.proto \
+    -d '{"number": 5}' \ 
+    -cacert minica.pem \
+    -cert 127.0.0.1/cert.pem \
+    -key 127.0.0.1/key.pem \
+    localhost:50051 api.Primes.GetPrimes
