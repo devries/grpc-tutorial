@@ -112,6 +112,36 @@ and Go. I have a total of five samples. They are:
     certificate connect. The interceptor would also be useful for rate
     limiting and any other cross-cutting functions across the service.
 
+## Server Streaming
+
+As a sample of server streaming gRPC calls in python, I implemented a server
+which streams primes rather than returns a single list. The protocol is defined
+as follow:
+
+```protobuf
+syntax = "proto3";
+
+package api;
+
+service PrimeStream {
+  rpc GetPrimes(PrimeCount) returns (stream PrimeNumber) {}
+}
+
+message PrimeCount {
+  int64 number = 1;
+}
+
+message PrimeNumber {
+  int64 count = 1;
+  int64 value = 2;
+}
+```
+
+The code is in the `python_stream` directory. 
+
+ - [python client](python_stream/client.py) (python_stream)
+ - [python server](python_stream/server.py) (python_stream)
+
 ## Compiling the code
 
 I use Go modules in this code, which means I use a `go.mod` file. Given this
