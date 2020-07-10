@@ -19,7 +19,7 @@ class PrimeStream(primestream_pb2_grpc.PrimeStreamServicer):
             logging.warning("Error: Asked for negative amount")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, "Requested number of primes must be positive")
 
-        for i, p in enumerate(primes(context, request.number)):
+        for i, p in enumerate(primes(context, request.number),1):
             yield primestream_pb2.PrimeNumber(count=i, value=p)
 
 def serve():
@@ -43,11 +43,14 @@ def serve():
     server.wait_for_termination()
 
 def primes(context, nreq):
+    if nreq<1:
+        return
+
     primes = []
     yield 2
 
     i = 3
-    ctr = 0
+    ctr = 1
     for i in itertools.count(3,2):
         if not (context.is_active() and ctr<nreq):
             break
