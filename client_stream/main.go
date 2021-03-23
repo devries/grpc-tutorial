@@ -5,9 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
-	"os"
+	// "os"
+
+	_ "embed"
 
 	"github.com/devries/grpc-tutorial/api"
 	"google.golang.org/grpc"
@@ -16,28 +18,28 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
+//go:embed minica.pem
+var bs []byte
+
 func main() {
 	nf := flag.Int64("n", 5, "number of primes to get")
+	host := flag.String("h", "localhost", "host name")
+	port := flag.Int("p", 50051, "port number")
 
 	flag.Parse()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "50051"
-	}
-
 	pool := x509.NewCertPool()
-	bs, err := ioutil.ReadFile("minica.pem")
-	if err != nil {
-		log.Fatalf("Unable to load ca certificate: %s", err)
-	}
+	// bs, err := ioutil.ReadFile("minica.pem")
+	// if err != nil {
+	// 	log.Fatalf("Unable to load ca certificate: %s", err)
+	// }
 
 	ok := pool.AppendCertsFromPEM(bs)
 	if !ok {
 		log.Fatal("failed to append ca certificate to pool")
 	}
 
-	address := fmt.Sprintf("localhost:%s", port)
+	address := fmt.Sprintf("%s:%d", *host, *port)
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(pool, "")))
 	if err != nil {
 		log.Fatalf("did not connect: %s", err)

@@ -3,8 +3,11 @@
 .cache
 .env
 api/primes.pb.go
+api/primestream.pb.go
 primes_client
 primes_server
+prime_stream_client
+prime_stream_server
 venv/
 __pycache__
 python_*/primes_pb2.py
