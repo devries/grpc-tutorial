@@ -68,9 +68,9 @@ func (s *server) GetPrimes(in *api.PrimeCount, stream api.PrimeStream_GetPrimesS
 	ctx := stream.Context()
 	p, ok := peer.FromContext(ctx)
 	if ok {
-		log.Printf("Received Request from %s", p.Addr)
+		log.Printf("Received Request from %s for %d primes", p.Addr, in.Number)
 	} else {
-		log.Printf("Received Request")
+		log.Printf("Received Request for %d primes", in.Number)
 	}
 
 	if in.Number < 0 {
