@@ -11,8 +11,8 @@ import primestream_pb2_grpc
 class PrimeStream(primestream_pb2_grpc.PrimeStreamServicer):
     def GetPrimes(self, request, context):
         p = context.peer()
-        logging.info(f"Received Request from {p}")
-        if request.number>100000:
+        logging.info(f"Received Request from {p} for {request.number} primes")
+        if request.number>1000000:
             logging.warning("Error: Asked for too many primes")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"{request.number} is too many primes to return")
         if request.number<0:
