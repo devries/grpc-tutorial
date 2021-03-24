@@ -94,9 +94,7 @@ func (s *server) GetPrimes(in *api.PrimeCount, stream api.PrimeStream_GetPrimesS
 	go PrimeGenerator(ctx, ch)
 
 	for i := int64(0); i < in.Number; i++ {
-		n := api.PrimeNumber{}
-		n.Count = i + 1
-		n.Value = <-ch
+		n := api.PrimeNumber{Count: i + 1, Value: <-ch}
 		if err := stream.Send(&n); err != nil {
 			return err
 		}
