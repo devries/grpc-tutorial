@@ -63,6 +63,6 @@ func main() {
 			log.Fatalf("error: %s", err)
 		}
 
-		log.Printf("Received prime %d: %d", res.GetCount(), res.GetValue())
+		log.Printf("Received prime %7d: %8d", res.GetCount(), res.GetValue())
 	}
 }
