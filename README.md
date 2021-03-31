@@ -141,6 +141,8 @@ The code is in the `python_stream` directory.
 
  - [python client](python_stream/client.py) (python_stream)
  - [python server](python_stream/server.py) (python_stream)
+ - [Go client](client_stream/main.go) (client_stream)
+ - [Go server](server_stream/main.go) (server_stream)
 
 ## Compiling the code
 
