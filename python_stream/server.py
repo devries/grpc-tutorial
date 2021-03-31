@@ -2,6 +2,7 @@ from concurrent import futures
 import logging
 import math
 import itertools
+import os
 
 import grpc
 
@@ -35,11 +36,13 @@ def serve():
     creds = grpc.ssl_server_credentials(((private_key, cert),),
             root_certificates=root_cert)
 
+    port = os.getenv('PORT', '30301')
+
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     primestream_pb2_grpc.add_PrimeStreamServicer_to_server(PrimeStream(), server)
-    server.add_secure_port('[::]:30301', creds)
+    server.add_secure_port(f'[::]:{port}', creds)
     server.start()
-    logging.info("Listening on port 30301")
+    logging.info(f"Listening on port {port}")
     server.wait_for_termination()
 
 def primes(context, nreq):
