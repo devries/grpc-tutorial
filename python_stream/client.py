@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser(description="Get some primes")
     parser.add_argument('-n', dest='number', default=5, type=int)
     parser.add_argument('-a', dest='host', default='localhost')
-    parser.add_argument('-p', dest='port', default=30301)
+    parser.add_argument('-p', dest='port', default=55551)
     args = parser.parse_args()
 
     address = f'{args.host}:{args.port}'
@@ -29,7 +29,7 @@ def main():
     with grpc.secure_channel(address, creds) as channel:
         try:
             stub = primestream_pb2_grpc.PrimeStreamStub(channel)
-            r = get_primes(stub, args.number)
+            get_primes(stub, args.number)
         except grpc.RpcError as e:
             logging.error(f"{e.code()}: {e.details()}")
 
