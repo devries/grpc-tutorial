@@ -41,3 +41,9 @@ grpcurl -proto api/primes.proto \
     -cert 127.0.0.1/cert.pem \
     -key 127.0.0.1/key.pem \
     localhost:50051 api.Primes.GetPrimes
+
+grpcurl -proto apistream/primestream.proto \
+    -d '{"number": 25}' \
+    -cacert minica.pem localhost:55551 \
+    apistream.PrimeStream.GetPrimes | jq \
+    -r '[.count, .value] | join(": ")'
