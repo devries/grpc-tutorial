@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
-	"github.com/devries/grpc-tutorial/api"
+	"github.com/devries/grpc-tutorial/apistream"
 
 	"crypto/tls"
 	"crypto/x509"
@@ -24,7 +24,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		port = "50051"
+		port = "55551"
 	}
 
 	certificate, err := tls.LoadX509KeyPair("localhost/cert.pem", "localhost/key.pem")
@@ -56,15 +56,18 @@ func main() {
 	}
 
 	s := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
-	api.RegisterPrimeStreamServer(s, &server{})
+	srv := server{}
+	apistream.RegisterPrimeStreamServer(s, &srv)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %s", err)
 	}
 }
 
-type server struct{}
+type server struct {
+	apistream.UnimplementedPrimeStreamServer
+}
 
-func (s *server) GetPrimes(in *api.PrimeCount, stream api.PrimeStream_GetPrimesServer) error {
+func (s *server) GetPrimes(in *apistream.PrimeCount, stream apistream.PrimeStream_GetPrimesServer) error {
 	ctx := stream.Context()
 	p, ok := peer.FromContext(ctx)
 	if ok {
@@ -79,7 +82,7 @@ func (s *server) GetPrimes(in *api.PrimeCount, stream api.PrimeStream_GetPrimesS
 		return retErr
 	}
 
-	if in.Number > 1000000 {
+	if in.Number > 10000000 {
 		retErr := status.Errorf(codes.InvalidArgument, "%d is too many primes to return", in.Number)
 		log.Printf("Error: Asked for too many primes")
 		return retErr
@@ -90,16 +93,16 @@ func (s *server) GetPrimes(in *api.PrimeCount, stream api.PrimeStream_GetPrimesS
 	// Prepare prime generator
 	ch := make(chan int64)
 	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	go PrimeGenerator(ctx, ch)
 
 	for i := int64(0); i < in.Number; i++ {
-		n := api.PrimeNumber{Count: i + 1, Value: <-ch}
+		n := apistream.PrimeNumber{Count: i + 1, Value: <-ch}
 		if err := stream.Send(&n); err != nil {
 			return err
 		}
 	}
-	cancel()
 
 	return nil
 }

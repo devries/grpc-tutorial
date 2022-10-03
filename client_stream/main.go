@@ -7,11 +7,11 @@ import (
 	"io"
 	// "io/ioutil"
 	"log"
-	// "os"
+	"os"
 
 	_ "embed"
 
-	"github.com/devries/grpc-tutorial/api"
+	"github.com/devries/grpc-tutorial/apistream"
 	"google.golang.org/grpc"
 
 	"crypto/x509"
@@ -24,15 +24,15 @@ var bs []byte
 func main() {
 	nf := flag.Int64("n", 5, "number of primes to get")
 	host := flag.String("h", "localhost", "host name")
-	port := flag.Int("p", 50051, "port number")
+	port := flag.Int("p", 55551, "port number")
 
 	flag.Parse()
 
 	pool := x509.NewCertPool()
-	// bs, err := ioutil.ReadFile("minica.pem")
-	// if err != nil {
-	// 	log.Fatalf("Unable to load ca certificate: %s", err)
-	// }
+	bs, err := os.ReadFile("minica.pem")
+	if err != nil {
+		log.Fatalf("Unable to load ca certificate: %s", err)
+	}
 
 	ok := pool.AppendCertsFromPEM(bs)
 	if !ok {
@@ -46,10 +46,10 @@ func main() {
 	}
 	defer conn.Close()
 
-	c := api.NewPrimeStreamClient(conn)
+	c := apistream.NewPrimeStreamClient(conn)
 	ctx := context.Background()
 
-	stream, err := c.GetPrimes(ctx, &api.PrimeCount{Number: *nf})
+	stream, err := c.GetPrimes(ctx, &apistream.PrimeCount{Number: *nf})
 	if err != nil {
 		log.Fatalf("could not get primes: %s", err)
 	}
