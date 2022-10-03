@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	// "io/ioutil"
 	"log"
 	"os"
 
@@ -49,6 +48,18 @@ func main() {
 	c := apistream.NewPrimeStreamClient(conn)
 	ctx := context.Background()
 
+	var displaydivisor int64 = 1
+	switch {
+	case *nf < 1000:
+		displaydivisor = 1
+	case *nf < 10000:
+		displaydivisor = 10
+	case *nf < 100000:
+		displaydivisor = 100
+	default:
+		displaydivisor = 1000
+	}
+
 	stream, err := c.GetPrimes(ctx, &apistream.PrimeCount{Number: *nf})
 	if err != nil {
 		log.Fatalf("could not get primes: %s", err)
@@ -63,6 +74,8 @@ func main() {
 			log.Fatalf("error: %s", err)
 		}
 
-		log.Printf("Received prime %7d: %8d", res.GetCount(), res.GetValue())
+		if res.GetCount()%displaydivisor == 0 {
+			log.Printf("Received prime %7d: %8d", res.GetCount(), res.GetValue())
+		}
 	}
 }
